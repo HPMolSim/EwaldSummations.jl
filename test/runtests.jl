@@ -1,6 +1,8 @@
 using EwaldSummations
 using Test
+using ExTinyMD
 
 @testset "EwaldSummations.jl" begin
-    # Write your tests here.
+    include("Ewald2D.jl")
+    include("Ewald3D.jl")
 end

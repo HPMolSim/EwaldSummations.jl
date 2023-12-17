@@ -1,10 +1,18 @@
 name = "EwaldSummations"
 uuid = "329efeb5-5dc7-45f3-8303-d0bcfeef1c8a"
-authors = ["Xuanzhao Gao <gaoxuanzhao@gmail.com> and contributors"]
-version = "1.0.0-DEV"
+authors = ["Xuanzhao Gao <xz.gao@connect.ust.hk>"]
+version = "0.1.0"
+
+[deps]
+ExTinyMD = "fec76197-d59f-46dd-a0ed-76a83c21f7aa"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [compat]
-julia = "1"
+julia = "1.7"
+ExTinyMD = "0.2.3"
+ForwardDiff = "0.10.36"
+SpecialFunctions = "2.3.1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
