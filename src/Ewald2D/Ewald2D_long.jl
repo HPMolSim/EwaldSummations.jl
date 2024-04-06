@@ -12,10 +12,10 @@ end
 function Ewald2D_long_energy_k(i::Int, K::Tuple{T, T, T}, interaction::Ewald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
     k_x, k_y, k = K
     α = interaction.α
-    sum_ki = zero(T)
-    for j in 1:interaction.n_atoms
+    L = interaction.L
+    sum_ki = @distributed (+) for j in 1:interaction.n_atoms
         x_ij, y_ij, z_ij = position[i] - position[j]
-        sum_ki += q[i] * q[j] * cos(k_x * x_ij + k_y * y_ij) * (exp(k * z_ij) * erfc(k / (2α) + α * z_ij) + exp( - k * z_ij) * erfc(k / (2α) - α * z_ij)) / (8 * interaction.L[1] * interaction.L[2] * k)
+        q[i] * q[j] * cos(k_x * x_ij + k_y * y_ij) * (exp(k * z_ij) * erfc(k / (2α) + α * z_ij) + exp( - k * z_ij) * erfc(k / (2α) - α * z_ij)) / (8 * L[1] * L[2] * k)
     end
     return sum_ki
 end
@@ -23,9 +23,10 @@ end
 function Ewald2D_long_energy_k0(i::Int, interaction::Ewald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
     α = interaction.α
     sum_k0i = zero(T)
-    for j in 1:interaction.n_atoms
+    L = interaction.L
+    sum_k0i = @distributed (+) for j in 1:interaction.n_atoms
         x_ij, y_ij, z_ij = position[i] - position[j]
-        sum_k0i += - q[i] * q[j] * (1 / (α * sqrt(π)) * exp(-(α * z_ij)^2) + z_ij * erf(α * z_ij)) / (4 *  interaction.L[1] * interaction.L[2])
+        - q[i] * q[j] * (1 / (α * sqrt(π)) * exp(-(α * z_ij)^2) + z_ij * erf(α * z_ij)) / (4 *  L[1] * L[2])
     end
     return sum_k0i
 end
@@ -48,10 +49,11 @@ end
 function Ewald2D_long_force_k0!(interaction::Ewald2DInteraction{T}, position::Vector{Point{3, T}}, charge::Vector{T}, force_long::Vector{Point{3, T}}) where {T<:Number}
     α = interaction.α
     for i in 1:interaction.n_atoms
-        for j in 1:interaction.n_atoms
+        force_i = @distributed (+) for j in 1:interaction.n_atoms
             z_ij = position[i][3] - position[j][3]
-            force_long[i] += Point(zero(T), zero(T), charge[i] * charge[j] * (erf(α * z_ij))  / (2 * interaction.L[1] * interaction.L[2] * interaction.ϵ))
+            Point(zero(T), zero(T), charge[i] * charge[j] * (erf(α * z_ij))  / (2 * interaction.L[1] * interaction.L[2] * interaction.ϵ))
         end
+        force_long[i] += force_i
     end
     return nothing
 end
@@ -62,23 +64,22 @@ function Ewald2D_long_force_k!(K::Tuple{T, T, T}, interaction::Ewald2DInteractio
     k_x, k_y, k = K
 
     for i in 1:n_atoms
-        sum_x = zero(T)
-        sum_y = zero(T)
-        sum_z = zero(T)
-        for j in 1:n_atoms
+        s = @distributed (+) for j in 1:n_atoms
             x_ij, y_ij, z_ij = position[i] - position[j]
 
             sum_xy = - charge[i] * charge[j] * sin(k_x * x_ij + k_y * y_ij) * (exp(k * z_ij) * erfc(k / (2α) + α * z_ij) + exp( - k * z_ij) * erfc(k / (2α) - α * z_ij))
-            sum_x += k_x * sum_xy / k
-            sum_y += k_y * sum_xy / k
+            sx = k_x * sum_xy / k
+            sy = k_y * sum_xy / k
 
-            sum_z += charge[i] * charge[j] * cos(k_x * x_ij + k_y * y_ij) * (
+            sz = charge[i] * charge[j] * cos(k_x * x_ij + k_y * y_ij) * (
                 k * exp(k * z_ij) * erfc(k / (2α) + α * z_ij) - 
                 k * exp( - k * z_ij) * erfc(k / (2α) - α * z_ij) -
                 2α / sqrt(π) * exp(k * z_ij) * exp(-(k / (2α) + α * z_ij)^2) +
                 2α / sqrt(π) * exp(- k * z_ij) * exp(-(k / (2α) - α * z_ij)^2) ) / k
+            
+            Point(sx, sy, sz)
         end
-        force_long[i] += - Point(sum_x, sum_y, sum_z) / (4 * interaction.L[1] * interaction.L[2] * interaction.ϵ)
+        force_long[i] += - s / (4 * interaction.L[1] * interaction.L[2] * interaction.ϵ)
     end
     return nothing
 end
