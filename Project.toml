@@ -1,7 +1,7 @@
 name = "EwaldSummations"
 uuid = "329efeb5-5dc7-45f3-8303-d0bcfeef1c8a"
 authors = ["Xuanzhao Gao <xz.gao@connect.ust.hk>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
