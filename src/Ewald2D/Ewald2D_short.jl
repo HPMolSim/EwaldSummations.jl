@@ -3,7 +3,9 @@ function Ewald2D_short_energy(interaction::Ewald2DInteraction{T}, neighbor::Cell
 
     boundary = Q2dBoundary(interaction.L[1], interaction.L[2], interaction.L[3])
 
-    energy_short = @distributed (+) for (i, j, ρ) in neighbor_list
+    energy_short = Atomic{T}(zero(T))
+
+    @threads for (i, j, ρ) in neighbor_list
         coord_1, coord_2, r_sq = position_check3D(position[i], position[j], boundary, interaction.r_c)
         if iszero(r_sq)
             E = zero(T)
@@ -12,14 +14,15 @@ function Ewald2D_short_energy(interaction::Ewald2DInteraction{T}, neighbor::Cell
             q_2 = q[j]
             E = Ewald2D_Es_pair(q_1, q_2, interaction.α, r_sq)
         end
-        E
+        atomic_add!(energy_short, E)
     end
 
-    energy_short += @distributed (+) for i in 1:interaction.n_atoms
-        Ewald2D_Es_self(q[i], interaction.α)
+    @threads for i in 1:interaction.n_atoms
+        t = Ewald2D_Es_self(q[i], interaction.α)
+        atomic_add!(energy_short, t)
     end
 
-    return energy_short / (4π * interaction.ϵ)
+    return energy_short[] / (4π * interaction.ϵ)
 end
 
 function Ewald2D_Es_pair(q_1::T, q_2::T, α::T, r_sq::T) where{T}

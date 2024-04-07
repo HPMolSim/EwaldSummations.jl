@@ -1,6 +1,7 @@
 module EwaldSummations
 
-using ExTinyMD, SpecialFunctions, ForwardDiff, Distributed
+using ExTinyMD, SpecialFunctions, ForwardDiff
+using Base.Threads, Distributed
 export CoulumbEnergy, CoulumbForce, energy, force
 export SysQ2D, SysQ2DInit, Sys3D, Energy_Q2D, Force_Q2D, Force_self_Q2D, Energy_3D, Force_3D
 export Ewald2DInteraction, Ewald2D_long_energy, Ewald2D_short_energy, Ewald2D_short_force, Ewald2D_long_force, Ewald2D_long_energy_k, Ewald2D_long_energy_k0
