@@ -1,4 +1,5 @@
 @testset "Compare Ewald3D energy with direct sum" begin
+    @info "Test for Ewald3D energy"
     n_atoms = 100
     L = 100.0
     boundary = Boundary((L, L, L), (1, 1, 1))
@@ -28,6 +29,7 @@
 end
 
 @testset "Compare Ewald3D force with direct sum" begin
+    @info "Test for Ewald3D force"
     n_atoms = 100
     L = 100.0
     boundary = Boundary((L, L, L), (1, 1, 1))

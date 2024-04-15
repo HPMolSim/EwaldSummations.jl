@@ -46,7 +46,6 @@ function SysQ2DInit(sys::SysQ2D, position::Vector{Point{3, T}}, charge::Vector{T
 end
 
 function Energy_Q2D(sys::SysQ2D, position::Vector{Point{3, T}}, charge::Vector{T}, reflect_position::Vector{Point{3, T}}, reflect_charge::Vector{T}) where T<:Number
-    @warn "This will be very slow!"
     energy = zero(T)
     for i in 1:length(charge)
         q_i = charge[i]
@@ -65,7 +64,6 @@ function Energy_Q2D(sys::SysQ2D, position::Vector{Point{3, T}}, charge::Vector{T
 end
 
 function Force_Q2D(sys::SysQ2D, position::Vector{Point{3, T}}, charge::Vector{T}, reflect_position::Vector{Point{3, T}}, reflect_charge::Vector{T}) where T<:Number
-    @warn "This will be very slow!"
     force = [Point(zero(T), zero(T), zero(T)) for _=1:length(charge)]
     for i in 1:length(charge)
         q_i = charge[i]

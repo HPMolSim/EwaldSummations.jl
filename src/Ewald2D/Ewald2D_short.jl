@@ -36,10 +36,11 @@ end
 function Ewald2D_short_force(interaction::Ewald2DInteraction{T}, neighbor::CellList3D{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
     neighbor_list = neighbor.neighbor_list
  
-    force_short = [Point(zero(T), zero(T), zero(T)) for _=1:interaction.n_atoms]
+    force_short = [[Point(zero(T), zero(T), zero(T)) for _=1:interaction.n_atoms] for _ in 1:nthreads()]
     boundary = Q2dBoundary(interaction.L[1], interaction.L[2], interaction.L[3])
 
-    for (i, j, ρ) in neighbor_list
+    @threads for (i, j, ρ) in neighbor_list
+        n = threadid()
         coord_1, coord_2, r_sq = position_check3D(position[i], position[j], boundary, interaction.r_c)
         if iszero(r_sq)
             nothing
@@ -47,12 +48,12 @@ function Ewald2D_short_force(interaction::Ewald2DInteraction{T}, neighbor::CellL
             q_1 = q[i]
             q_2 = q[j]
             F_ij = Ewald2D_Fs_pair(q_1, q_2, interaction.α, coord_1, coord_2)
-            force_short[i] += F_ij / (4π * interaction.ϵ)
-            force_short[j] -= F_ij / (4π * interaction.ϵ)
+            force_short[n][i] += F_ij / (4π * interaction.ϵ)
+            force_short[n][j] -= F_ij / (4π * interaction.ϵ)
         end
     end
 
-    return force_short
+    return sum(force_short)
 end
 
 function Ewald2D_Fs_pair(q_1::T, q_2::T, α::T, coord_1::Point{3, T}, coord_2::Point{3, T}) where{T}

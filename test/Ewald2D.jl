@@ -1,4 +1,5 @@
 @testset "compare Ewald2D energy with ICM" begin
+    @info "Test for Ewald2D energy"
     n_atoms = 100
     L = 100.0
     boundary = ExTinyMD.Q2dBoundary(L, L, L)
@@ -31,6 +32,7 @@
 end
 
 @testset "compare Ewald2D force with ICM" begin
+    @info "Test for Ewald2D force"
     n_atoms = 100
     L = 100.0
     boundary = ExTinyMD.Q2dBoundary(L, L, L)

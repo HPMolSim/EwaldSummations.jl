@@ -7,7 +7,6 @@ end
 Sys3D(L::NTuple{3, T}, N::NTuple{3, Int}; ϵ::T = one(T)) where{T} = Sys3D{T}(L, N, ϵ)
 
 function Energy_3D(sys::Sys3D, position::Vector{Point{3, T}}, charge::Vector{T}) where T<:Number
-    @warn "This will be very slow!"
     energy = zero(T)
     for i in 1:length(charge)
         q_i = charge[i]
@@ -28,7 +27,6 @@ function Energy_3D(sys::Sys3D, position::Vector{Point{3, T}}, charge::Vector{T})
 end
 
 function Force_3D(sys::Sys3D, position::Vector{Point{3, T}}, charge::Vector{T}) where T<:Number
-    @warn "This will be very slow!"
     force = [Point(zero(T), zero(T), zero(T)) for _=1:length(charge)]
     for i in 1:length(charge)
         q_i = charge[i]
