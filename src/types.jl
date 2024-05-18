@@ -18,3 +18,15 @@ struct Ewald3DInteraction{T} <: ExTinyMD.AbstractInteraction
     L::NTuple{3,T}
     k_set::Vector{Tuple{T, T, T, T}}
 end
+
+struct IcmEwald2DInteraction{T} <: ExTinyMD.AbstractInteraction
+    n_atoms::Int
+    ϵ::T
+    α::T
+    r_c::T
+    k_c::T
+    γ::Tuple{T, T}
+    L::NTuple{3,T}
+    N_image::Int
+    k_set::Vector{Tuple{T, T, T}}
+end
