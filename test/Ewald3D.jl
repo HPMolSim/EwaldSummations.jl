@@ -1,3 +1,6 @@
+using ExTinyMD, EwaldSummations
+using Test
+
 @testset "Compare Ewald3D energy with direct sum" begin
     @info "Test for Ewald3D energy"
     n_atoms = 100

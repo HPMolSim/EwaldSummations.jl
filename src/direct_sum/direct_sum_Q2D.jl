@@ -8,12 +8,18 @@ end
 
 SysQ2D(γ::NTuple{2, T}, L::NTuple{3, T}, N_real::Int, N_img::Int; ϵ::T = one(T)) where{T} = SysQ2D{T}(γ, L, N_real, N_img, ϵ)
 
-function SysQ2DInit(sys::SysQ2D, position::Vector{Point{3, T}}, charge::Vector{T}) where T <: Number
-    # @assert sum(charge) == 0
-    γ_up = sys.γ[1]
-    γ_down = sys.γ[2]
+function ICM_reflect(γ::NTuple{2, T}, L::NTuple{3, T}, N_img::Int, position::Vector{Point{3, T}}, charge::Vector{T}) where{T}
+    γ_up = γ[1]
+    γ_down = γ[2]
     reflect_position = Vector{Point{3, T}}()
     reflect_charge = Vector{T}()
+
+    for i in 1:length(charge)
+        x, y, z = position[i]
+        q = charge[i]
+        push!(reflect_position, Point(x, y, z))
+        push!(reflect_charge, q)
+    end
 
     for i = 1:length(charge)
         x, y, z = position[i]
@@ -22,19 +28,17 @@ function SysQ2DInit(sys::SysQ2D, position::Vector{Point{3, T}}, charge::Vector{T
         position_down = Vector{T}()
         charge_up = Vector{T}()
         charge_down = Vector{T}()
-        push!(position_up, 2.0 * sys.L[3] - z)
+        push!(position_up, 2.0 * L[3] - z)
         push!(position_down, - z)
         push!(charge_up, γ_up * q)
         push!(charge_down, γ_down * q)
-        for m in 2:sys.N_img
-            push!(position_up, 2 * sys.L[3] - position_down[m-1])
+        for m in 2:N_img
+            push!(position_up, 2 * L[3] - position_down[m-1])
             push!(position_down, - position_up[m-1])
             push!(charge_up, γ_up * charge_down[m-1])
             push!(charge_down, γ_down * charge_up[m-1])
         end
-        push!(reflect_position, Point(x, y, z))
-        push!(reflect_charge, q)
-        for m in 1:sys.N_img
+        for m in 1:N_img
             push!(reflect_position, Point(x, y, position_up[m]))
             push!(reflect_charge, charge_up[m])
             push!(reflect_position, Point(x, y, position_down[m]))
@@ -43,6 +47,11 @@ function SysQ2DInit(sys::SysQ2D, position::Vector{Point{3, T}}, charge::Vector{T
     end
 
     return reflect_position, reflect_charge
+end
+
+function SysQ2DInit(sys::SysQ2D, position::Vector{Point{3, T}}, charge::Vector{T}) where T <: Number
+
+    return ICM_reflect(sys.γ, sys.L, sys.N_img, position, charge)
 end
 
 function Energy_Q2D(sys::SysQ2D, position::Vector{Point{3, T}}, charge::Vector{T}, reflect_position::Vector{Point{3, T}}, reflect_charge::Vector{T}) where T<:Number
