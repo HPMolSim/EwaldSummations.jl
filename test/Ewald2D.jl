@@ -1,3 +1,6 @@
+using ExTinyMD, EwaldSummations
+using Test
+
 @testset "compare Ewald2D energy with ICM" begin
     @info "Test for Ewald2D energy"
     n_atoms = 100

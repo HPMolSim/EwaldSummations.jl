@@ -16,7 +16,7 @@ function CellListICM(reflect_position::Vector{Point{3, T}}, L::NTuple{3, T}, r_c
     return rr_list, ri_list
 end
 
-function ICMEwald2D_short_energy(interaction::IcmEwald2DInteraction{T}, ref_pos::Vector{Point{3, T}}, ref_q::Vector{T}) where{T}
+function ICMEwald_short_energy(interaction::Union{IcmEwald2DInteraction{T}, IcmEwald3DInteraction{T}}, ref_pos::Vector{Point{3, T}}, ref_q::Vector{T}) where{T}
 
     rr_list, ri_list = CellListICM(ref_pos, interaction.L, interaction.r_c, interaction.N_image, interaction.n_atoms)
 

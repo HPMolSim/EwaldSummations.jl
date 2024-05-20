@@ -34,7 +34,6 @@ using Test
 end
 
 @testset "ICM_Ewald2D vs ICM_direct_sum" begin
-    @info "Test for ICM_Ewald2D energy"
     n_atoms = 32
     L = 10.0
     boundary = ExTinyMD.Q2dBoundary(L, L, L)

@@ -35,6 +35,8 @@ function energy(interaction::Ewald2DInteraction{T}, neighbor::CellList3D{T}, inf
     energy_long = Ewald2D_long_energy(interaction, position, charge)
     energy_short = Ewald2D_short_energy(interaction, neighbor, position, charge)
 
+    @debug "Ewald2D El = $energy_long, Es = $energy_short"
+
     return energy_long + energy_short
 end
 
