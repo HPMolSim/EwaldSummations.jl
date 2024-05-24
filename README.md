@@ -142,9 +142,6 @@ ref_pos, ref_charge = SysQ2DInit(sys_q2d, coords, charge)
 energy_icm = Energy_Q2D(sys_q2d, coords, charge, ref_pos, ref_charge)
 
 # ICM-Ewald2D, consider 20 layers of image charges
-coords = [p_info.position for p_info in info.particle_info]
-charge = [atoms[p_info.id].charge for p_info in info.particle_info]
-
 ICMEwald2D_interaction = IcmEwald2DInteraction(n_atoms, s, alpha, γ, (L, L, L), N_img)
 energy_icmewald2d = ICMEwald2D_energy(ICMEwald2D_interaction, coords, charge)
 
