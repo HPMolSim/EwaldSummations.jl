@@ -17,6 +17,21 @@ pkg> add ExTinyMD, EwaldSummations
 ```
 to install the package.
 
+## Numerical Methods
+
+In this package, we provide various methods to calculate the electrostatic interaction energy of charged particle systems. For system without dielectric mismatch, the following methods are available:
+* Direction summation: sum directly over periodic directions (3D and quasi-2D)
+* Ewald3D: the standard Ewald summation for 3D systems
+* Ewald2D: the standard Ewald summation for 2D systems
+
+Then for quasi-2D systems confined by dielectric mismatch, we combine the image charge method and the methods above, given by
+* Image charge reflection: generating the image charge series according to the dielectric mismatch
+* ICM + direct summation: combining the image charge method and the direct summation
+* ICM + Ewald2D: combining the image charge method and the Ewald2D method
+* ICM + Ewald3D + ELC: extending the quasi-2D system as triply periodic, and calculate the energy via Ewald3D and electrostatic layer correction (ELC)
+
+For detailed numerical formula, please refer to the reference[^yuan].
+
 ## Examples of Usage
 
 Here are some examples of usage, for more details please see the test files.
@@ -59,7 +74,7 @@ charge = [atoms[p_info.id].charge for p_info in info.particle_info]
 energy_direct = Energy_3D(sys_3d, coords, charge)
 ```
 
-### Doubly periodic systems
+### Doubly periodic systems without dielectric mismatch
 
 Here is an example for calculating energy of Q2D systems, via Ewald3D or direction summation.
 
@@ -101,6 +116,13 @@ n_atoms = 100
 L = 100.0
 boundary = ExTinyMD.Q2dBoundary(L, L, L)
 
+s = 6.0
+alpha = 2.0
+γ = (0.9, 0.9)
+N_img = 10
+N_pad = 20
+N_real = 50
+
 atoms = Vector{Atom{Float64}}()
 for i in 1:n_atoms÷2
     push!(atoms, Atom(type = 1, mass = 1.0, charge = 1.0))
@@ -112,14 +134,28 @@ end
 
 info = SimulationInfo(n_atoms, atoms, (0.0, L, 0.0, L, 0.0, L), boundary; min_r = 1.0, temp = 1.0)
 
-# consider 100 * 100 periodic images, and 20 layers of image charges
-sys_q2d = SysQ2D((0.9, 0.9), (L, L, L), 50, 10, ϵ = 1.0)
+# direction summations, consider 100 * 100 periodic images, and 20 layers of image charges
+sys_q2d = SysQ2D(γ, (L, L, L), N_real, N_img, ϵ = 1.0)
 coords = [p_info.position for p_info in info.particle_info]
 charge = [atoms[p_info.id].charge for p_info in info.particle_info]
 ref_pos, ref_charge = SysQ2DInit(sys_q2d, coords, charge)
 energy_icm = Energy_Q2D(sys_q2d, coords, charge, ref_pos, ref_charge)
+
+# ICM-Ewald2D, consider 20 layers of image charges
+coords = [p_info.position for p_info in info.particle_info]
+charge = [atoms[p_info.id].charge for p_info in info.particle_info]
+
+ICMEwald2D_interaction = IcmEwald2DInteraction(n_atoms, s, alpha, γ, (L, L, L), N_img)
+energy_icmewald2d = ICMEwald2D_energy(ICMEwald2D_interaction, coords, charge)
+
+# ICM-Ewald3D, consider 20 layers of image charges and 40 layers of padding
+ICMEwald3D_interaction = IcmEwald3DInteraction(n_atoms, s, alpha, γ, (L, L, L), N_pad, N_img)
+energy_icmewald3d = ICMEwald3D_energy(ICMEwald3D_interaction, coords, charge)
 ```
 
 ## How to Contribute
 
 If you find any bug or have any suggestion, please open an issue.
+
+
+[^yuan]: J. Yuan, H. S. Antila, and E. Luijten, Particle–particle particle–mesh algorithm for electrolytes between charged dielectric interfaces, J. Chem. Phys., 154 (2021), p. 094115.
