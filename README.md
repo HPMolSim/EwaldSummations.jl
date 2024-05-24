@@ -1,13 +1,14 @@
 # EwaldSummations
 
 [![Build Status](https://github.com/HPMolSim/EwaldSummations.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/HPMolSim/EwaldSummations.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Build Status](https://travis-ci.com/HPMolSim/EwaldSummations.jl.svg?branch=main)](https://travis-ci.com/HPMolSim/EwaldSummations.jl)
 [![Coverage](https://codecov.io/gh/HPMolSim/EwaldSummations.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/HPMolSim/EwaldSummations.jl)
 
 
 `EwaldSummations.jl` is an implementation of the basic Ewald summation algorithm, including Ewald3D and Ewald2D. This package also include the naive approach: sum directly over periodic directions.
+Specially, for dielectric confined quasi-2D systems, this package provide a set of tools based on the image charge method, combining with the Ewald2D or Ewald3D-ELC method.
 
 This package is designed to provide standard/correct results of electrostatic interaction in charged particle systems, and can be used as a tool box when developing new algorithms.
+For some of the implemented methods, the package support parallel computation by `Base.Threads`, start that by `julia -t 8 your_script.jl`.
 
 ## Getting Started
 
