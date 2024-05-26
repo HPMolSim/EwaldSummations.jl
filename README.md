@@ -144,7 +144,7 @@ energy_icm = Energy_Q2D(sys_q2d, coords, charge, ref_pos, ref_charge)
 
 # ICM-Ewald2D, consider 20 layers of image charges
 ICMEwald2D_interaction = IcmEwald2DInteraction(n_atoms, s, alpha, γ, (L, L, L), N_img)
-energy_icmewald2d = ICMEwald2D_energy(ICMEwald2D_interaction, coords, charge)
+energy_icmewald2d = ICM_Ewald2D_energy(ICMEwald2D_interaction, coords, charge)
 
 # ICM-Ewald3D, consider 20 layers of image charges and 40 layers of padding
 ICMEwald3D_interaction = IcmEwald3DInteraction(n_atoms, s, alpha, γ, (L, L, L), N_pad, N_img)

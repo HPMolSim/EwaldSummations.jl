@@ -27,7 +27,7 @@ function k_set_2D(k_c::T, L::NTuple{3,T}) where{T}
     return k_set
 end
 
-function energy(interaction::Ewald2DInteraction{T}, neighbor::CellList3D{T}, info::SimulationInfo{T}, atoms::Vector{Atom{T}}) where{T}
+function ExTinyMD.energy(interaction::Ewald2DInteraction{T}, neighbor::CellList3D{T}, info::SimulationInfo{T}, atoms::Vector{Atom{T}}) where{T}
 
     charge = [atoms[info.particle_info[i].id].charge for i in 1:interaction.n_atoms]
     position = [info.particle_info[i].position for i in 1:interaction.n_atoms]

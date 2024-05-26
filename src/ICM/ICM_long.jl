@@ -1,17 +1,17 @@
-function ICMEwald2D_long_energy(interaction::IcmEwald2DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
+function ICM_Ewald2D_long_energy(interaction::IcmEwald2DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
     energy = Atomic{T}(zero(T))
     @threads for i in 1:interaction.n_atoms
         t = zero(T)
-        t += ICMEwald2D_long_energy_k0(i, interaction, ref_position, ref_charge)
+        t += ICM_Ewald2D_long_energy_k0(i, interaction, ref_position, ref_charge)
         for K in interaction.k_set
-            t += ICMEwald2D_long_energy_k(i, K, interaction, ref_position, ref_charge)
+            t += ICM_Ewald2D_long_energy_k(i, K, interaction, ref_position, ref_charge)
         end
         atomic_add!(energy, t)
     end
     return energy[] / interaction.ϵ
 end
 
-function ICMEwald2D_long_energy_k(i::Int, K::Tuple{T, T, T}, interaction::IcmEwald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
+function ICM_Ewald2D_long_energy_k(i::Int, K::Tuple{T, T, T}, interaction::IcmEwald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
     k_x, k_y, k = K
     α = interaction.α
     L = interaction.L
@@ -29,7 +29,7 @@ function ICMEwald2D_long_energy_k(i::Int, K::Tuple{T, T, T}, interaction::IcmEwa
     return t
 end
 
-function ICMEwald2D_long_energy_k0(i::Int, interaction::IcmEwald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
+function ICM_Ewald2D_long_energy_k0(i::Int, interaction::IcmEwald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
     α = interaction.α
     L = interaction.L
     t = zero(T)
@@ -41,19 +41,19 @@ function ICMEwald2D_long_energy_k0(i::Int, interaction::IcmEwald2DInteraction{T}
 end
 
 
-function ICMEwald3D_long_energy(interaction::IcmEwald3DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
+function ICM_Ewald3D_long_energy(interaction::IcmEwald3DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
 
     energy = Atomic{T}(zero(T))
 
     @threads for K in interaction.k_set
-        t = ICMEwald3D_long_energy_k(K, interaction, ref_position, ref_charge)
+        t = ICM_Ewald3D_long_energy_k(K, interaction, ref_position, ref_charge)
         atomic_add!(energy, t)
     end
 
     return energy[] / (4π * interaction.ϵ)
 end
 
-function ICMEwald3D_long_energy_k(K::Tuple{T, T, T, T}, interaction::IcmEwald3DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
+function ICM_Ewald3D_long_energy_k(K::Tuple{T, T, T, T}, interaction::IcmEwald3DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
     k_x, k_y, k_z, k = K
     L_x, L_y, L_z = interaction.L
     α = interaction.α
@@ -78,7 +78,7 @@ function ICMEwald3D_long_energy_k(K::Tuple{T, T, T, T}, interaction::IcmEwald3DI
     return sum_k
 end
 
-function ICMEwald3D_long_energy_slab(interaction::IcmEwald3DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
+function ICM_Ewald3D_long_energy_slab(interaction::IcmEwald3DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
 
     L_x, L_y, L_z = interaction.L
     energy = zero(T)

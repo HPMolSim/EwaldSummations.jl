@@ -5,12 +5,12 @@ function IcmEwald2DInteraction(n_atoms::Int, s::T, α::T, γ::Tuple{T, T}, L::NT
     return IcmEwald2DInteraction(n_atoms, ϵ, α, r_c, k_c, γ, L, N_image, k_set)
 end
 
-function ICMEwald2D_energy(interaction::IcmEwald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
+function ICM_Ewald2D_energy(interaction::IcmEwald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
 
     ref_pos, ref_q = ICM_reflect(interaction.γ, interaction.L, interaction.N_image, position, q)
 
-    Es = ICMEwald_short_energy(interaction, ref_pos, ref_q)
-    El = ICMEwald2D_long_energy(interaction, ref_pos, ref_q)
+    Es = ICM_Ewald_short_energy(interaction, ref_pos, ref_q)
+    El = ICM_Ewald2D_long_energy(interaction, ref_pos, ref_q)
 
     @debug "ICM Ewald2D, El = $El, Es = $Es"
 
@@ -24,13 +24,13 @@ function IcmEwald3DInteraction(n_atoms::Int, s::T, α::T, γ::Tuple{T, T}, L::NT
     return IcmEwald3DInteraction(n_atoms, ϵ, α, r_c, k_c, γ, L, N_image, N_pad, k_set)
 end
 
-function ICMEwald3D_energy(interaction::IcmEwald3DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
+function ICM_Ewald3D_energy(interaction::IcmEwald3DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
 
     ref_pos, ref_q = ICM_reflect(interaction.γ, interaction.L, interaction.N_image, position, q)
 
-    Es = ICMEwald_short_energy(interaction, ref_pos, ref_q)
-    El = ICMEwald3D_long_energy(interaction, ref_pos, ref_q)
-    E_slab = ICMEwald3D_long_energy_slab(interaction, ref_pos, ref_q)
+    Es = ICM_Ewald_short_energy(interaction, ref_pos, ref_q)
+    El = ICM_Ewald3D_long_energy(interaction, ref_pos, ref_q)
+    E_slab = ICM_Ewald3D_long_energy_slab(interaction, ref_pos, ref_q)
 
     @debug "ICM Ewald3D ELC, El = $El, Es = $Es, E_slab = $E_slab"
 

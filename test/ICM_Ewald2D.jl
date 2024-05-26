@@ -24,7 +24,7 @@ using Test
     γ = (0.0, 0.0)
 
     ICMEwald2D_interaction = IcmEwald2DInteraction(n_atoms, 6.0, 2.0, γ, (L, L, L), 1)
-    energy_icmewald = ICMEwald2D_energy(ICMEwald2D_interaction, coords, charge)
+    energy_icmewald = ICM_Ewald2D_energy(ICMEwald2D_interaction, coords, charge)
 
     Ewald2D_interaction = Ewald2DInteraction(n_atoms, 6.0, 2.0, (L, L, L), ϵ = 1.0)
     neighbor = CellList3D(info, Ewald2D_interaction.r_c, boundary, 1)
@@ -57,7 +57,7 @@ end
     for γ in [(0.5, 0.5), (-0.5, -0.5), (0.5, -0.5), (-0.5, 0.5)]
 
         ICMEwald2D_interaction = IcmEwald2DInteraction(n_atoms, 3.0, 1.0, γ, (L, L, L), N_img)
-        energy_ewald = ICMEwald2D_energy(ICMEwald2D_interaction, coords, charge)
+        energy_ewald = ICM_Ewald2D_energy(ICMEwald2D_interaction, coords, charge)
 
         sys_q2d = SysQ2D(γ, (L, L, L), N_real, N_img)
         ref_pos, ref_charge = SysQ2DInit(sys_q2d, coords, charge)
