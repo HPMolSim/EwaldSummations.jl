@@ -1,8 +1,8 @@
-using ExTinyMD, EwaldSummations
+using EwaldSummations
 using Test
 
 @testset "ICM_Ewald2D vs Ewald2D" begin
-    @info "Test for ICM_Ewald2D energy"
+    @info "Test for ICM_Ewald2D energy and force"
     n_atoms = 32
     L = 10.0
     boundary = ExTinyMD.Q2dBoundary(L, L, L)
@@ -25,12 +25,19 @@ using Test
 
     ICMEwald2D_interaction = IcmEwald2DInteraction(n_atoms, 6.0, 2.0, γ, (L, L, L), 1)
     energy_icmewald = ICM_Ewald2D_energy(ICMEwald2D_interaction, coords, charge)
+    force_icmewald = ICM_Ewald2D_force(ICMEwald2D_interaction, coords, charge)
 
     Ewald2D_interaction = Ewald2DInteraction(n_atoms, 6.0, 2.0, (L, L, L), ϵ = 1.0)
     neighbor = CellList3D(info, Ewald2D_interaction.r_c, boundary, 1)
     energy_ewald = energy(Ewald2D_interaction, neighbor, info, atoms)
+    force_ewald = force(Ewald2D_interaction, neighbor, info, atoms)
     
     @test energy_icmewald ≈ energy_ewald
+    for i in 1:n_atoms
+        for j in 1:3
+            @test force_icmewald[i][j] ≈ force_ewald[i][j]
+        end
+    end
 end
 
 @testset "ICM_Ewald2D vs ICM_direct_sum" begin
@@ -58,11 +65,18 @@ end
 
         ICMEwald2D_interaction = IcmEwald2DInteraction(n_atoms, 3.0, 1.0, γ, (L, L, L), N_img)
         energy_ewald = ICM_Ewald2D_energy(ICMEwald2D_interaction, coords, charge)
+        force_ewald = ICM_Ewald2D_force(ICMEwald2D_interaction, coords, charge)
 
         sys_q2d = SysQ2D(γ, (L, L, L), N_real, N_img)
         ref_pos, ref_charge = SysQ2DInit(sys_q2d, coords, charge)
         energy_direct_sum = Energy_Q2D(sys_q2d, coords, charge, ref_pos, ref_charge)
+        force_direct_sum = Force_Q2D(sys_q2d, coords, charge, ref_pos, ref_charge)
 
-        @test isapprox(energy_direct_sum, energy_ewald, atol = 1e-2)
+        @test isapprox(energy_direct_sum, energy_ewald, atol = 1e-3)
+        for i in 1:n_atoms
+            for j in 1:3
+                @test isapprox(force_direct_sum[i][j], force_ewald[i][j], atol = 1e-3)
+            end
+        end
     end
 end

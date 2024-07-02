@@ -2,7 +2,7 @@ using ExTinyMD, EwaldSummations
 using Test
 
 @testset "ICM_Ewald3D_ELC vs Ewald2D" begin
-    @info "Test for ICM_Ewald3D energy"
+    @info "Test for ICM_Ewald3D energy and force"
     n_atoms = 32
     L = 10.0
     boundary = ExTinyMD.Q2dBoundary(L, L, L)
@@ -23,14 +23,21 @@ using Test
 
     γ = (0.0, 0.0)
 
-    ICMEwald3D_interaction = IcmEwald3DInteraction(n_atoms, 6.0, 2.0, γ, (L, L, L), 0, 10)
+    ICMEwald3D_interaction = IcmEwald3DInteraction(n_atoms, 6.0, 2.0, γ, (L, L, L), 0, 20)
     energy_icmewald = ICM_Ewald3D_energy(ICMEwald3D_interaction, coords, charge)
+    force_icmewald = ICM_Ewald3D_force(ICMEwald3D_interaction, coords, charge)
 
     Ewald2D_interaction = Ewald2DInteraction(n_atoms, 6.0, 2.0, (L, L, L), ϵ = 1.0)
     neighbor = CellList3D(info, Ewald2D_interaction.r_c, boundary, 1)
     energy_ewald = energy(Ewald2D_interaction, neighbor, info, atoms)
+    force_ewald = force(Ewald2D_interaction, neighbor, info, atoms)
     
     @test energy_icmewald ≈ energy_ewald
+    for i in 1:n_atoms
+        @test force_icmewald[i][1] ≈ force_ewald[i][1]
+        @test force_icmewald[i][2] ≈ force_ewald[i][2]
+        @test force_icmewald[i][3] ≈ force_ewald[i][3]
+    end
 end
 
 @testset "ICM_Ewald3D_ELC vs ICM_Ewald2D" begin
@@ -56,11 +63,17 @@ end
 
         ICMEwald3D_interaction = IcmEwald3DInteraction(n_atoms, 6.0, 2.0, γ, (L, L, L), 5, 10)
         energy_icmewald3d = ICM_Ewald3D_energy(ICMEwald3D_interaction, coords, charge)
+        force_icmewald3d = ICM_Ewald3D_force(ICMEwald3D_interaction, coords, charge)
 
         ICMEwald2D_interaction = IcmEwald2DInteraction(n_atoms, 6.0, 2.0, γ, (L, L, L), 5)
         energy_icmewald2d = ICM_Ewald2D_energy(ICMEwald2D_interaction, coords, charge)
+        force_icmewald2d = ICM_Ewald2D_force(ICMEwald2D_interaction, coords, charge)
         
         @test energy_icmewald3d ≈ energy_icmewald2d
+        for i in 1:n_atoms
+            @test force_icmewald3d[i][1] ≈ force_icmewald2d[i][1]
+            @test force_icmewald3d[i][2] ≈ force_icmewald2d[i][2]
+            @test force_icmewald3d[i][3] ≈ force_icmewald2d[i][3]
+        end
     end
-
 end
