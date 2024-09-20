@@ -22,6 +22,13 @@ using Test
 
     neighbor = CellList3D(info, Ewald2D_interaction.r_c, boundary, 1)
     energy_ewald = energy(Ewald2D_interaction, neighbor, info, atoms)
+    
+    p = [p_info.position for p_info in info.particle_info]
+    q = [atoms[p_info.id].charge for p_info in info.particle_info]
+
+    energy_per_atoms = Ewald2D_short_energy_N(n_atoms, Ewald2D_interaction, neighbor, p, q) + Ewald2D_long_energy_N(n_atoms, Ewald2D_interaction, p, q)
+
+    @test sum(energy_per_atoms) ≈ energy_ewald
 
     N_real = 200
     N_img = 0
