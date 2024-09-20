@@ -64,6 +64,25 @@ function Ewald2D_short_energy_i(i::Int, interaction::Ewald2DInteraction{T}, neig
     return energy_short / (4π * interaction.ϵ)
 end
 
+function Ewald2D_short_energy_i(i::Int, interaction::Ewald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
+    boundary = Q2dBoundary(interaction.L[1], interaction.L[2], interaction.L[3])
+    energy_short = zero(T)
+    rcsq = interaction.r_c^2
+    for j in 1:interaction.n_atoms
+        coord_1, coord_2, r_sq = position_check3D(position[i], position[j], boundary, interaction.r_c)
+        if !iszero(r_sq) && (rsq < rcsq)
+            q_1 = q[i]
+            q_2 = q[j]
+            E = Ewald2D_Es_pair(q_1, q_2, interaction.α, r_sq)
+            energy_short += E / 2
+        end
+    end
+
+    energy_short += Ewald2D_Es_self(q[i], interaction.α)
+
+    return energy_short / (4π * interaction.ϵ)
+end
+
 """
     Ewald2D_short_energy_N(N::Int, interaction::Ewald2DInteraction{T}, neighbor::CellList3D{T}, position::Vector{Point{3, T}}, q::Vector{T}) where {T}
 
@@ -91,6 +110,13 @@ function Ewald2D_short_energy_N(N::Int, interaction::Ewald2DInteraction{T}, neig
     end
     @threads for i in 1:N
         energy_short_N[i] = Ewald2D_short_energy_i(i, interaction, neighbor_dict, position, q)
+    end
+    return energy_short_N
+end
+function Ewald2D_short_energy_N(N::Int, interaction::Ewald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
+    energy_short_N = zeros(T, N)
+    @threads for i in 1:N
+        energy_short_N[i] = Ewald2D_short_energy_i(i, interaction, position, q)
     end
     return energy_short_N
 end
