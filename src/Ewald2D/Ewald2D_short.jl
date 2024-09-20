@@ -70,7 +70,7 @@ function Ewald2D_short_energy_i(i::Int, interaction::Ewald2DInteraction{T}, posi
     rcsq = interaction.r_c^2
     for j in 1:interaction.n_atoms
         coord_1, coord_2, r_sq = position_check3D(position[i], position[j], boundary, interaction.r_c)
-        if !iszero(r_sq) && (rsq < rcsq)
+        if !iszero(r_sq) && (r_sq < rcsq)
             q_1 = q[i]
             q_2 = q[j]
             E = Ewald2D_Es_pair(q_1, q_2, interaction.α, r_sq)
