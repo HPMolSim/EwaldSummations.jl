@@ -11,6 +11,33 @@ function Ewald2D_long_energy(interaction::Ewald2DInteraction{T}, position::Vecto
     return energy[] / interaction.ϵ
 end
 
+"""
+    Ewald2D_long_energy_N(N::Int, interaction::Ewald2DInteraction{T}, position::Vector{Point{3, T}}, charge::Vector{T}) where {T}
+
+Calculate the long-range part of the Ewald summation energy of the first N-th particles for a 2D periodic system.
+
+# Arguments
+- `N::Int`: The number of particles.
+- `interaction::Ewald2DInteraction{T}`: The Ewald interaction parameters and precomputed values.
+- `position::Vector{Point{3, T}}`: The positions of the particles in 3D space.
+- `charge::Vector{T}`: The charges of the particles.
+
+# Returns
+- `Vector{T}`: The long-range energy contributions for each particle, normalized by the dielectric constant `ϵ` of the interaction.
+"""
+function Ewald2D_long_energy_N(N::Int, interaction::Ewald2DInteraction{T}, position::Vector{Point{3, T}}, charge::Vector{T}) where{T}
+    energy_N = zeros(T, N)
+    @threads for i in 1:N
+        t = zero(T)
+        t += Ewald2D_long_energy_k0(i, interaction, position, charge)
+        for K in interaction.k_set
+            t += Ewald2D_long_energy_k(i, K, interaction, position, charge)
+        end
+        energy_N[i] = t
+    end
+    return energy_N ./ interaction.ϵ
+end
+
 function Ewald2D_long_energy_k(i::Int, K::Tuple{T, T, T}, interaction::Ewald2DInteraction{T}, position::Vector{Point{3, T}}, q::Vector{T}) where{T}
     k_x, k_y, k = K
     α = interaction.α
