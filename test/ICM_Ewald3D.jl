@@ -1,5 +1,7 @@
 using ExTinyMD, EwaldSummations
 using Test
+using Random
+Random.seed!(1234)
 
 @testset "ICM_Ewald3D_ELC vs Ewald2D" begin
     @info "Test for ICM_Ewald3D energy and force"

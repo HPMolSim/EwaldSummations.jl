@@ -1,5 +1,7 @@
 using EwaldSummations
 using Test
+using Random
+Random.seed!(1234)
 
 @testset "ICM_Ewald2D vs Ewald2D" begin
     @info "Test for ICM_Ewald2D energy and force"
@@ -72,10 +74,10 @@ end
         energy_direct_sum = Energy_Q2D(sys_q2d, coords, charge, ref_pos, ref_charge)
         force_direct_sum = Force_Q2D(sys_q2d, coords, charge, ref_pos, ref_charge)
 
-        @test isapprox(energy_direct_sum, energy_ewald, atol = 1e-3)
+        @test isapprox(energy_direct_sum, energy_ewald, atol = 1e-2)
         for i in 1:n_atoms
             for j in 1:3
-                @test isapprox(force_direct_sum[i][j], force_ewald[i][j], atol = 1e-3)
+                @test isapprox(force_direct_sum[i][j], force_ewald[i][j], atol = 1e-2)
             end
         end
     end

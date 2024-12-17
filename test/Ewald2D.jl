@@ -1,5 +1,7 @@
 using ExTinyMD, EwaldSummations
 using Test
+using Random
+Random.seed!(1234)
 
 @testset "compare Ewald2D energy with ICM" begin
     @info "Test for Ewald2D energy"

@@ -43,6 +43,8 @@ Here is an example for calculating energy of 3D systems, via Ewald3D or directio
 
 ```julia
 # Init the system
+using ExTinyMD, EwaldSummations
+
 n_atoms = 100
 L = 100.0
 boundary = Boundary((L, L, L), (1, 1, 1))
@@ -117,8 +119,8 @@ n_atoms = 100
 L = 100.0
 boundary = ExTinyMD.Q2dBoundary(L, L, L)
 
-s = 6.0
-alpha = 2.0
+s = 3.0
+alpha = 0.2
 γ = (0.9, 0.9)
 N_img = 10
 N_pad = 20
@@ -147,8 +149,17 @@ ICMEwald2D_interaction = IcmEwald2DInteraction(n_atoms, s, alpha, γ, (L, L, L),
 energy_icmewald2d = ICM_Ewald2D_energy(ICMEwald2D_interaction, coords, charge)
 
 # ICM-Ewald3D, consider 20 layers of image charges and 40 layers of padding
-ICMEwald3D_interaction = IcmEwald3DInteraction(n_atoms, s, alpha, γ, (L, L, L), N_pad, N_img)
-energy_icmewald3d = ICMEwald3D_energy(ICMEwald3D_interaction, coords, charge)
+ICMEwald3D_interaction = IcmEwald3DInteraction(n_atoms, s, alpha, γ, (L, L, L), N_img, N_pad)
+energy_icmewald3d = ICM_Ewald3D_energy(ICMEwald3D_interaction, coords, charge)
+```
+
+## Citation
+
+If you use this package in your research, please cite at least one of the following paper:
+
+```
+
+
 ```
 
 ## How to Contribute

@@ -1,5 +1,7 @@
 using ExTinyMD, EwaldSummations
 using Test
+using Random
+Random.seed!(1234)
 
 @testset "Compare Ewald3D energy with direct sum" begin
     @info "Test for Ewald3D energy"
