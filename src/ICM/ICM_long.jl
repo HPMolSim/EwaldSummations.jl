@@ -104,7 +104,7 @@ function ICM_Ewald2D_long_force_k0!(interaction::IcmEwald2DInteraction{T}, posit
 end
 
 
-function ICM_Ewald3D_long_energy(interaction::IcmEwald3DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
+function ICM_Ewald3D_long_energy(interaction::IcmEwald3DInteraction{T, TP}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T, TP}
 
     energy = Atomic{T}(zero(T))
 
@@ -116,7 +116,7 @@ function ICM_Ewald3D_long_energy(interaction::IcmEwald3DInteraction{T}, ref_posi
     return energy[] / (4π * interaction.ϵ)
 end
 
-function ICM_Ewald3D_long_energy_k(K::Tuple{T, T, T, T}, interaction::IcmEwald3DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
+function ICM_Ewald3D_long_energy_k(K::Tuple{T, T, T, T}, interaction::IcmEwald3DInteraction{T, TP}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T, TP}
     k_x, k_y, k_z, k = K
     L_x, L_y, L_z = interaction.L
     α = interaction.α
@@ -141,7 +141,7 @@ function ICM_Ewald3D_long_energy_k(K::Tuple{T, T, T, T}, interaction::IcmEwald3D
     return sum_k
 end
 
-function ICM_Ewald3D_long_force(interaction::IcmEwald3DInteraction{T}, position::Vector{Point{3, T}}, charge::Vector{T}) where{T}
+function ICM_Ewald3D_long_force(interaction::IcmEwald3DInteraction{T, TP}, position::Vector{Point{3, T}}, charge::Vector{T}) where{T, TP}
     
     n_atoms = interaction.n_atoms
     force_long = [Point(zero(T), zero(T), zero(T)) for _=1:n_atoms]
@@ -153,13 +153,13 @@ function ICM_Ewald3D_long_force(interaction::IcmEwald3DInteraction{T}, position:
     return force_long
 end
 
-function ICM_Ewald3D_long_force_k!(K::Tuple{T, T, T, T}, interaction::IcmEwald3DInteraction{T}, position::Vector{Point{3, T}}, charge::Vector{T}, force_long::Vector{Point{3, T}}) where{T}
+function ICM_Ewald3D_long_force_k!(K::Tuple{T, T, T, T}, interaction::IcmEwald3DInteraction{T, TP}, position::Vector{Point{3, T}}, charge::Vector{T}, force_long::Vector{Point{3, T}}) where{T, TP}
     k_x, k_y, k_z, k = K
     L_x, L_y, L_z = interaction.L
     α = interaction.α
     N_pad = interaction.N_pad
 
-    ρ_k = zero(ComplexF64)
+    ρ_k = zero(Complex{T})
     for j in 1:length(charge)
         x_j, y_j, z_j = position[j]
         ρ_k += charge[j] * exp(1.0im * (k_x * x_j + k_y * y_j + k_z * z_j))
@@ -173,7 +173,7 @@ function ICM_Ewald3D_long_force_k!(K::Tuple{T, T, T, T}, interaction::IcmEwald3D
     return nothing
 end
 
-function ICM_Ewald3D_long_energy_slab(interaction::IcmEwald3DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
+function ICM_Ewald3D_long_energy_slab(interaction::IcmEwald3DInteraction{T, TP}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T, TP}
 
     L_x, L_y, L_z = interaction.L
     energy = zero(T)
@@ -194,7 +194,7 @@ function ICM_Ewald3D_long_energy_slab(interaction::IcmEwald3DInteraction{T}, ref
     return energy / (4π * interaction.ϵ)
 end
 
-function ICM_Ewald3D_long_force_slab(interaction::IcmEwald3DInteraction{T}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T}
+function ICM_Ewald3D_long_force_slab(interaction::IcmEwald3DInteraction{T, TP}, ref_position::Vector{Point{3, T}}, ref_charge::Vector{T}) where{T, TP}
 
     L_x, L_y, L_z = interaction.L
     N_pad = interaction.N_pad

@@ -16,7 +16,7 @@ function CellListICM(reflect_position::Vector{Point{3, T}}, L::NTuple{3, T}, r_c
     return rr_list, ri_list
 end
 
-function ICM_Ewald_short_energy(interaction::Union{IcmEwald2DInteraction{T}, IcmEwald3DInteraction{T}}, ref_pos::Vector{Point{3, T}}, ref_q::Vector{T}) where{T}
+function ICM_Ewald_short_energy(interaction::Union{IcmEwald2DInteraction{T}, IcmEwald3DInteraction{T, TP}}, ref_pos::Vector{Point{3, T}}, ref_q::Vector{T}) where{T, TP}
 
     rr_list, ri_list = CellListICM(ref_pos, interaction.L, interaction.r_c, interaction.N_image, interaction.n_atoms)
 
@@ -44,7 +44,7 @@ function ICM_Ewald_short_energy(interaction::Union{IcmEwald2DInteraction{T}, Icm
     return energy_short[] / (4π * interaction.ϵ)
 end
 
-function ICM_Ewald_short_force(interaction::Union{IcmEwald2DInteraction{T}, IcmEwald3DInteraction{T}}, ref_pos::Vector{Point{3, T}}, ref_q::Vector{T}) where{T}
+function ICM_Ewald_short_force(interaction::Union{IcmEwald2DInteraction{T}, IcmEwald3DInteraction{T, TP}}, ref_pos::Vector{Point{3, T}}, ref_q::Vector{T}) where{T, TP}
 
     force_short = [Point(zero(T), zero(T), zero(T)) for _=1:interaction.n_atoms]
 
