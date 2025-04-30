@@ -17,6 +17,8 @@ export IcmEwald2DInteraction, CellListICM, ICM_Ewald2D_long_energy, ICM_Ewald_sh
 export IcmEwald3DInteraction, ICM_Ewald3D_long_energy, ICM_Ewald3D_slab_energy, ICM_Ewald3D_energy
 export ICM_Ewald2D_force, ICM_Ewald3D_force
 
+export icm_energy_error, elc_energy_error, icm_elc_energy_error
+
 include("types.jl")
 
 include("direct_sum/Coulumb.jl")
@@ -34,5 +36,7 @@ include("Ewald3D/Ewald3D_short.jl")
 include("ICM/ICM.jl")
 include("ICM/ICM_short.jl")
 include("ICM/ICM_long.jl")
+
+include("error_estimate.jl")
 
 end
