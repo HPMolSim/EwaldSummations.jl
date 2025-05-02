@@ -11,7 +11,7 @@ end
 
 function icm_elc_energy_error(Lx, Ly, Lz, H, M, ϵ, Cq, gu, gd)
     t = 4 * π^2 * Cq / (ϵ * Lx * Ly * (1 - exp(- (2 * π * Lz) / max(Lx, Ly))))
-    e = t * exp(- (2 * π * (Lz - H)) / max(Lx, Ly)) / (Lz - H)
+    e = t * exp(- (2 * π * (Lz - H)) / max(Lx, Ly)) / abs(Lz - H)
     for l in 1:M
         Cl = abs(gu^(ceil(l / 2)) * gd^(floor(l / 2))) + abs(gu^(floor(l / 2)) * gd^(ceil(l / 2)))
         e += t * Cl * exp(- (2 * π * (Lz - (l + 1) * H)) / max(Lx, Ly)) / abs(2 * (Lz - (l + 1) * H))
